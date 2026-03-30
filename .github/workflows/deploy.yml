@@ -43,5 +43,5 @@ jobs:
         mkdir -p ~/.kube
         echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
 
-    - name: Terraform Destroy
-      run: terraform destroy -auto-approve
+    - name: Terraform Plan
+      run: terraform plan
