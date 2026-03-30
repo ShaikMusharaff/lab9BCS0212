@@ -2,19 +2,24 @@ name: OpenFaaS CI/CD
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout
       uses: actions/checkout@v3
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
+
+    - name: Configure Kubeconfig
+      run: |
+        mkdir -p ~/.kube
+        echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
 
     - name: Terraform Init
       run: terraform init
@@ -22,6 +27,21 @@ jobs:
     - name: Terraform Apply
       run: terraform apply -auto-approve
 
-    - name: Destroy (optional)
-      if: github.event_name == 'workflow_dispatch'
+  destroy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Configure Kubeconfig
+      run: |
+        mkdir -p ~/.kube
+        echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+
+    - name: Terraform Destroy
       run: terraform destroy -auto-approve
