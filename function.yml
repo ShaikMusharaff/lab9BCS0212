@@ -1,0 +1,8 @@
+apiVersion: openfaas.com/v1
+kind: Function
+metadata:
+  name: hello-terraform
+  namespace: openfaas-fn
+spec:
+  name: hello-terraform
+  image: musharaff/hello:latest
